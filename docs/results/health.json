@@ -1,0 +1,51 @@
+{
+ "healthy": {
+  "colony_days": 6962,
+  "open_hive_days_per_season_180d": 0.0,
+  "check_days_per_season_180d": 0.07756391841424878,
+  "fixed_threshold_alarm_days_per_season_180d": 42.16891697787992
+ },
+ "scenarios": {
+  "forager_loss": {
+   "signal": "balance",
+   "runs": 40,
+   "detected": 40,
+   "median_days_to_check": 2.0,
+   "median_days_to_open_hive": 3.0,
+   "fixed_threshold_detected": 40,
+   "fixed_threshold_median_days": 2.0
+  },
+  "queen_loss": {
+   "signal": "pollen_share",
+   "runs": 40,
+   "detected": 40,
+   "median_days_to_check": 2.0,
+   "median_days_to_open_hive": 3,
+   "fixed_threshold_detected": 40,
+   "fixed_threshold_median_days": 1.0
+  },
+  "robbing": {
+   "signal": "agitation",
+   "runs": 40,
+   "detected": 40,
+   "median_days_to_check": 1.0,
+   "median_days_to_open_hive": 2.0,
+   "fixed_threshold_detected": 40,
+   "fixed_threshold_median_days": 1.0
+  },
+  "swarming": {
+   "signal": "crowding",
+   "runs": 40,
+   "detected": 40,
+   "median_days_to_check": 2.0,
+   "median_days_to_open_hive": 3.0,
+   "fixed_threshold_detected": 40,
+   "fixed_threshold_median_days": 3.0
+  },
+  "hornet": {
+   "runs": 40,
+   "detected": 40,
+   "median_days_to_check": 1.0
+  }
+ }
+}

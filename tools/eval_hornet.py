@@ -74,7 +74,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--per-kind", type=int, default=12)
     ap.add_argument("--fps", type=float, default=12.5)
     ap.add_argument("--inat", type=Path, default=Path("data/raw/inat"))
-    ap.add_argument("--boxes", type=Path, default=Path("data/interim/inat_boxes.json"))
+    ap.add_argument("--boxes", type=Path, default=Path("data/interim/inat_boxes_filtered.json"))
     ap.add_argument("--split", type=Path, default=Path("data/splits/inat_split.json"))
     ap.add_argument("--tracking", type=Path, default=Path("data/raw/landing_board/tracking"))
     ap.add_argument("--out", type=Path, default=Path("docs/results/hornet.json"))

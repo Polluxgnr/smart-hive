@@ -4,8 +4,9 @@ iNaturalist photos carry a species label but no box. YOLOE, Ultralytics'
 open-vocabulary detector (text prompts: hornet, wasp, bee, insect), proposes
 boxes. (YOLO-World v2 was tried first and found an insect in only 1-2 of 20
 photos, so it was dropped.) we keep, per photo, the boxes whose
-score is at least ``--min-conf`` and at least half of the best score in that
-photo, then drop photos with more than ``--max-boxes`` (nests, swarms) or none.
+raw boxes (score >= 0.05, at most 5 per photo after NMS) are saved; the dataset
+builder then keeps boxes scoring at least ``--min-conf`` and half the photo's best,
+and drops photos with none or with more than 3 (nests, swarms).
 The species comes from the iNaturalist label, never from the prompt.
 
 Output: data/interim/inat_boxes.json  {relative_path: [[x1, y1, x2, y2, score], ...]}
@@ -25,6 +26,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--weights", default="models/third_party/yoloe-11s-seg.pt")
     ap.add_argument("--min-conf", type=float, default=0.15)
     ap.add_argument("--max-boxes", type=int, default=3)
+    ap.add_argument("--imgsz", type=int, default=448, help="iNaturalist 'medium' photos are 500 px")
+    ap.add_argument("--max-bees", type=int, default=150, help="honey-bee photos to label")
     args = ap.parse_args(argv)
 
     import subprocess
@@ -42,32 +45,43 @@ def main(argv: list[str] | None = None) -> int:
         )
         subprocess.run([sys.executable, "-c", code, args.weights, str(baked)], check=True)
     model = YOLO(str(baked))
-    files = sorted(p for p in args.inat.rglob("*.jpg"))
-    result: dict[str, list[list[float]]] = {}
-    kept = 0
-    for i, f in enumerate(files):
-        # One image per call: a list source would be stacked into a single huge batch.
-        r = model.predict(str(f), imgsz=640, conf=0.05, verbose=False)[0]
-        rel = f.relative_to(args.inat).as_posix()
-        boxes = r.boxes
-        if boxes is None or len(boxes) == 0:
-            continue
-        xyxy = boxes.xyxy.cpu().numpy()
-        conf = boxes.conf.cpu().numpy()
-        best = float(conf.max())
-        if best < args.min_conf:
-            continue
-        sel = [
-            [*map(float, b), float(s)] for b, s in zip(xyxy, conf, strict=True) if s >= max(args.min_conf, 0.5 * best)
-        ]
-        sel = _dedupe(sel)
-        if 0 < len(sel) <= args.max_boxes:
-            result[rel] = sel
-            kept += 1
-        if (i + 1) % 250 == 0:
-            print(f"{i + 1}/{len(files)} photos, kept {kept}", flush=True)
+    # Vespids first (they matter most), and only a few honey-bee photos: bee crops come
+    # mainly from the landing-board frames.
+    order = ["vespa_velutina", "vespa_crabro", "vespula", "polistes", "apis_mellifera"]
+    files = []
+    for folder in order:
+        found = sorted((args.inat / folder).glob("*.jpg"))
+        files += found[: args.max_bees] if folder == "apis_mellifera" else found
+    # Resume: results and the list of photos already looked at are saved as we go.
+    done_path = args.out.with_suffix(".done.json")
+    result: dict[str, list[list[float]]] = json.loads(args.out.read_text()) if args.out.exists() else {}
+    done: set[str] = set(json.loads(done_path.read_text())) if done_path.exists() else set()
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result), encoding="utf-8")
+
+    def save() -> None:
+        args.out.write_text(json.dumps(result), encoding="utf-8")
+        done_path.write_text(json.dumps(sorted(done)), encoding="utf-8")
+
+    for i, f in enumerate(files):
+        rel = f.relative_to(args.inat).as_posix()
+        if rel in done:
+            continue
+        # One image per call: a list source would be stacked into a single huge batch.
+        r = model.predict(str(f), imgsz=args.imgsz, conf=0.05, verbose=False)[0]
+        done.add(rel)
+        boxes = r.boxes
+        if boxes is not None and len(boxes):
+            # Keep every box >= 0.05 (top 5); the confidence cut is applied when building datasets.
+            raw = [
+                [*map(float, b), float(c)]
+                for b, c in zip(boxes.xyxy.cpu().numpy(), boxes.conf.cpu().numpy(), strict=True)
+            ]
+            result[rel] = _dedupe(raw)[:5]
+        if (i + 1) % 100 == 0:
+            save()
+            print(f"{i + 1}/{len(files)} photos, kept {len(result)}", flush=True)
+    save()
+    kept = len(result)
     print(f"kept {kept}/{len(files)} photos -> {args.out}")
     return 0
 

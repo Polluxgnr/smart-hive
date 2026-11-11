@@ -254,6 +254,19 @@ def build_classification(args, boxes: dict, split: dict) -> None:
     print("classification crops:", dict(sorted(counts.items())))
 
 
+def filter_boxes(raw: dict, min_conf: float, max_boxes: int) -> dict:
+    """Keep boxes >= max(min_conf, half the photo's best score); drop empty or crowded photos."""
+    out = {}
+    for rel, bxs in raw.items():
+        if not bxs:
+            continue
+        best = max(b[4] for b in bxs)
+        keep = [b for b in bxs if b[4] >= max(min_conf, 0.5 * best)]
+        if 0 < len(keep) <= max_boxes:
+            out[rel] = keep
+    return out
+
+
 def square_crop(im: np.ndarray, cx: float, cy: float, side: float) -> np.ndarray:
     H, W = im.shape[:2]
     a, b = int(max(0, cx - side / 2)), int(max(0, cy - side / 2))
@@ -270,9 +283,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--composites", type=int, default=600)
     ap.add_argument("--bee-crops", type=int, default=1500)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--min-conf", type=float, default=0.12, help="pseudo-label score cut")
+    ap.add_argument("--max-boxes", type=int, default=3, help="drop photos with more insects (nests)")
     ap.add_argument("--only", choices=["detect", "classify"])
     args = ap.parse_args(argv)
-    boxes = json.loads(args.boxes.read_text(encoding="utf-8"))
+    boxes = filter_boxes(json.loads(args.boxes.read_text(encoding="utf-8")), args.min_conf, args.max_boxes)
+    filtered = args.boxes.with_name("inat_boxes_filtered.json")
+    filtered.write_text(json.dumps(boxes), encoding="utf-8")
+    print(f"{len(boxes)} photos kept after the confidence filter -> {filtered}")
     split = inat_split(args.inat, boxes, args.seed)
     splits_dir = args.out.parent / "splits"
     splits_dir.mkdir(parents=True, exist_ok=True)

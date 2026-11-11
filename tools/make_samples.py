@@ -309,7 +309,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", type=Path, default=Path("samples"))
     ap.add_argument("--inat", type=Path, default=Path("data/raw/inat"))
-    ap.add_argument("--boxes", type=Path, default=Path("data/interim/inat_boxes.json"))
+    ap.add_argument("--boxes", type=Path, default=Path("data/interim/inat_boxes_filtered.json"))
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args(argv)
     vids = args.out / "videos"
