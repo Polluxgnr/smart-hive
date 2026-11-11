@@ -1,0 +1,74 @@
+# Smart Hive configuration. Copy to config.yaml and edit.
+# All zone coordinates are fractions of the image (0 = left/top, 1 = right/bottom).
+# Run `smart-hive calibrate` to draw them on a camera frame with a 10 % grid.
+
+hive:
+  id: hive1              # short id, no spaces
+  name: "Ruche 1"        # shown on the dashboard and in alerts
+
+language: fr             # fr or en
+
+camera:
+  source: 0              # 0 = first USB/Pi camera, or a video file, or rtsp://...
+  width: 1280
+  height: 720
+  process_fps: 10        # frames analysed per second (Pi 4: 4-8, Pi 5: 8-12)
+
+entrance:
+  mode: zone             # zone = polygon around the entrance slot (recommended), line = counting line
+  # Polygon around the entrance slot: bees vanish into it (IN) or appear from it (OUT).
+  zone: [[0.10, 0.30], [0.90, 0.30], [0.90, 0.42], [0.10, 0.42]]
+  # Used only when mode: line. inside_point is any point on the hive side of the line.
+  line: [[0.05, 0.45], [0.95, 0.45]]
+  inside_point: [0.5, 0.2]
+  margin: 0.015
+  # Space in front of the entrance where hornets hover. Leave empty for the whole image.
+  hawk_zone:
+
+models:
+  detector: models/detector.pt
+  classifier: models/classifier.pt
+  imgsz: 640
+  conf: 0.25
+  classify_every: 3
+
+hornet:
+  hawk_min_seconds: 3      # hovering at least this long = attack event
+  alert_species: [vespa_velutina]   # European hornets and wasps are logged, not pushed
+  cooldown_minutes: 15
+  check_per_hour: 3
+
+alerts:
+  # Free push notifications to a phone: install the ntfy app and subscribe to your topic.
+  # Pick a long, hard-to-guess topic name: anyone who knows it can read the messages.
+  ntfy:
+    enabled: false
+    server: https://ntfy.sh
+    topic: ""
+  # E-mail through your own provider. The password is NOT stored here:
+  # set the environment variable SMART_HIVE_SMTP_PASSWORD instead.
+  email:
+    enabled: false
+    smtp_host: ""
+    smtp_port: 587
+    starttls: true
+    username: ""
+    sender: ""
+    to: []
+  daily_summary_hour: 20   # daily status is sent after this hour
+  send_status_levels: [check]
+
+# Optional: explain quiet days by cold or rain (Open-Meteo, free, no account).
+weather:
+  enabled: false
+  latitude:
+  longitude:
+
+storage:
+  data_dir: hive_data
+  save_annotated_video: false
+
+dashboard:
+  host: 0.0.0.0            # reachable from the home network
+  port: 8080
+  refresh_minutes: 5
