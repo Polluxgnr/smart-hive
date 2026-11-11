@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Data, weights and run outputs (never committed; see tools/ to reproduce)
+data/
+runs/
+models/*.pt
+models/*.onnx
+models/*_openvino_model/
+models/*_ncnn_model/
+hive_data/
+out/
+*.mp4.part
+yolo*.pt
+
+# Local config with the user's own settings
+config.yaml
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

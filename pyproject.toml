@@ -1,0 +1,50 @@
+[project]
+name = "smart-hive"
+version = "0.1.0"
+description = "A cheap camera at the hive entrance: colony-health status against the hive's own baseline, and Asian hornet alerts."
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+requires-python = ">=3.10"
+authors = [{ name = "Pollux Gronier" }]
+keywords = ["beekeeping", "computer-vision", "yolo", "bytetrack", "asian-hornet", "vespa-velutina", "raspberry-pi"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+dependencies = [
+    "ultralytics>=8.3",
+    "lap>=0.5",
+    "numpy>=1.24",
+    "opencv-python-headless>=4.8",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+export = ["onnx>=1.15", "openvino>=2024.0"]
+video = ["imageio-ffmpeg>=0.5"]
+
+[project.scripts]
+smart-hive = "smarthive.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+smarthive = ["assets/*", "assets/**/*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
