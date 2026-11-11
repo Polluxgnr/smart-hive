@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="system-ui,Segoe UI,sans-serif" font-size="14">
+  <title>Camera placement, side view</title>
+  <rect width="640" height="380" fill="#fcfcfb"/>
+  <!-- ground -->
+  <line x1="20" y1="340" x2="620" y2="340" stroke="#898781" stroke-width="2"/>
+  <!-- hive stand -->
+  <rect x="300" y="250" width="220" height="90" fill="#e1e0d9" stroke="#52514e"/>
+  <!-- hive body -->
+  <rect x="300" y="80" width="220" height="160" fill="#f2e6c9" stroke="#52514e" stroke-width="2"/>
+  <rect x="290" y="64" width="240" height="18" fill="#c3c2b7" stroke="#52514e"/>
+  <text x="410" y="165" text-anchor="middle" fill="#52514e">hive / ruche</text>
+  <!-- entrance slot and landing board -->
+  <rect x="300" y="228" width="10" height="12" fill="#0b0b0b"/>
+  <polygon points="300,240 300,250 200,262 200,254" fill="#b98a4a" stroke="#52514e"/>
+  <text x="196" y="285" text-anchor="end" fill="#52514e">landing board</text>
+  <text x="196" y="302" text-anchor="end" fill="#52514e">planche d'envol</text>
+  <!-- camera arm -->
+  <line x1="300" y1="110" x2="235" y2="110" stroke="#52514e" stroke-width="5"/>
+  <line x1="235" y1="110" x2="235" y2="150" stroke="#52514e" stroke-width="5"/>
+  <!-- roof over camera -->
+  <polygon points="205,140 268,140 262,132 211,132" fill="#898781"/>
+  <!-- camera box -->
+  <rect x="215" y="142" width="40" height="30" rx="4" fill="#2a78d6"/>
+  <text x="200" y="160" text-anchor="end" fill="#0b0b0b">camera in a box</text>
+  <text x="200" y="177" text-anchor="end" fill="#0b0b0b">caméra en boîtier</text>
+  <!-- field of view -->
+  <polygon points="235,172 175,262 300,250" fill="#2a78d6" opacity="0.15"/>
+  <line x1="235" y1="172" x2="175" y2="262" stroke="#2a78d6" stroke-dasharray="5 4"/>
+  <line x1="235" y1="172" x2="300" y2="250" stroke="#2a78d6" stroke-dasharray="5 4"/>
+  <!-- height marker -->
+  <line x1="580" y1="172" x2="580" y2="252" stroke="#eb6834" stroke-width="2"/>
+  <line x1="570" y1="172" x2="590" y2="172" stroke="#eb6834" stroke-width="2"/>
+  <line x1="570" y1="252" x2="590" y2="252" stroke="#eb6834" stroke-width="2"/>
+  <line x1="255" y1="172" x2="570" y2="172" stroke="#eb6834" stroke-dasharray="2 4"/>
+  <line x1="300" y1="252" x2="570" y2="252" stroke="#eb6834" stroke-dasharray="2 4"/>
+  <text x="596" y="208" fill="#0b0b0b">15-25</text>
+  <text x="596" y="226" fill="#0b0b0b">cm</text>
+  <!-- flight path -->
+  <path d="M30,280 C100,276 140,268 185,260" fill="none" stroke="#898781" stroke-width="2" marker-end="url(#a)"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#898781"/></marker></defs>
+  <text x="20" y="214" fill="#52514e">bees' flight path stays free</text>
+  <text x="20" y="231" fill="#52514e">le passage des abeilles reste libre</text>
+  <!-- cable -->
+  <path d="M300,104 C300,40 560,40 560,340" fill="none" stroke="#0b0b0b" stroke-width="2"/>
+  <text x="610" y="30" text-anchor="end" fill="#52514e">cable to the Pi / câble vers le Pi</text>
+</svg>
