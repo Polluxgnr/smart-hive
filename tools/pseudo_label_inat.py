@@ -1,7 +1,9 @@
 """Box the insect in each iNaturalist photo with an open-vocabulary detector.
 
-iNaturalist photos carry a species label but no box. YOLO-World (prompts:
-hornet, wasp, bee, insect) proposes boxes; we keep, per photo, the boxes whose
+iNaturalist photos carry a species label but no box. YOLOE, Ultralytics'
+open-vocabulary detector (text prompts: hornet, wasp, bee, insect), proposes
+boxes. (YOLO-World v2 was tried first and found an insect in only 1-2 of 20
+photos, so it was dropped.) we keep, per photo, the boxes whose
 score is at least ``--min-conf`` and at least half of the best score in that
 photo, then drop photos with more than ``--max-boxes`` (nests, swarms) or none.
 The species comes from the iNaturalist label, never from the prompt.
@@ -20,15 +22,26 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--inat", type=Path, default=Path("data/raw/inat"))
     ap.add_argument("--out", type=Path, default=Path("data/interim/inat_boxes.json"))
-    ap.add_argument("--weights", default="models/third_party/yolov8s-worldv2.pt")
+    ap.add_argument("--weights", default="models/third_party/yoloe-11s-seg.pt")
     ap.add_argument("--min-conf", type=float, default=0.15)
     ap.add_argument("--max-boxes", type=int, default=3)
     args = ap.parse_args(argv)
 
-    from ultralytics import YOLOWorld
+    import subprocess
+    import sys
 
-    model = YOLOWorld(args.weights)
-    model.set_classes(["hornet", "wasp", "bee", "insect"])
+    from ultralytics import YOLO
+
+    # Encoding the prompts needs a text model (several hundred MB of RAM). Do it once in a
+    # child process and save a model with the prompt embeddings baked in.
+    baked = Path(args.weights).with_name("yoloe-11s-insects.pt")
+    if not baked.exists():
+        code = (
+            "from ultralytics import YOLOE; import sys; m = YOLOE(sys.argv[1]); "
+            "n = ['hornet', 'wasp', 'bee', 'insect']; m.set_classes(n, m.get_text_pe(n)); m.save(sys.argv[2])"
+        )
+        subprocess.run([sys.executable, "-c", code, args.weights, str(baked)], check=True)
+    model = YOLO(str(baked))
     files = sorted(p for p in args.inat.rglob("*.jpg"))
     result: dict[str, list[list[float]]] = {}
     kept = 0

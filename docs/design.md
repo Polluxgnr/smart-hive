@@ -72,7 +72,10 @@ on the home network. No database server, no cloud account, no JavaScript build.
     of one hive are nearly identical, so a frame split would leak and inflate mAP.
   * Vespids: iNaturalist research-grade photos (CC0 / CC BY / CC BY-SA, Europe) of
     *V. velutina*, *V. crabro*, *Vespula*, *Polistes*. They have no boxes; boxes are produced
-    once by an open-vocabulary detector (YOLO-World) and kept only when confident and unique.
+    once by an open-vocabulary detector (YOLOE with text prompts) and kept only when confident.
+    Photos where nothing is found (nests, landscapes, tiny insects) are dropped, which also
+    cleans the species data. YOLO-World v2 was tried first and found an insect in only 1-2 of
+    20 photos.
   * Copy-paste composites: vespid crops pasted with a feathered mask onto landing-board
     frames, so the detector sees hornets at entrance scale.
 * **Deployment**: export to ONNX / OpenVINO (Intel laptops) or NCNN (Raspberry Pi).
@@ -116,7 +119,7 @@ All signals are hourly aggregates stored in SQLite, turned into one value per da
 | Forager balance | (OUT - IN) / (OUT + IN) | up | foragers not coming back: pesticide, predation, drift |
 | Pollen inflow | pollen-bearing share of IN bees | down | less brood being raised: queen problem, dearth |
 | Crowding | mean bees stationary on the board (> 20 s, < 1 body-length net move) | up | bearding: heat, congestion, swarm preparation |
-| Agitation | share of tracks with erratic motion (high turning) + close contacts | up | robbing or fighting at the entrance |
+| Agitation | share of bee tracks with erratic, zig-zag motion (mean heading change > 1.2 rad) | up | robbing or fighting at the entrance |
 | Hornet pressure | *V. velutina* hawking events | up | predation, foraging paralysis |
 
 ### 5.1 Robust baseline
@@ -193,7 +196,8 @@ on the local network.
 
 * Detection: mAP50 and mAP50-95 on a **held-out hive**.
 * Counting: IN/OUT from the full pipeline vs counts obtained by running the same rule on the
-  dataset's manually annotated tracks, on unseen videos; MAE per minute and relative error.
+  dataset's manually annotated tracks, on held-out hives and two videos of other hives;
+  mean absolute error per 30 s window and total relative error.
 * Species: precision / recall / confusion matrix on held-out iNaturalist observations.
 * Hawking events: precision / recall on synthetic composites with known ground truth; false
   alerts per hour on hornet-free real footage.
