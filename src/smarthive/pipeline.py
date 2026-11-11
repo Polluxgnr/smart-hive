@@ -14,6 +14,7 @@ import numpy as np
 
 from . import annotate
 from .alerts import Alert, Notifier
+from .capture import open_source
 from .config import Config
 from .counting import EntranceCounter, LineRule, ZoneRule
 from .geometry import scale_points
@@ -76,7 +77,7 @@ class HivePipeline:
         else:
             inside = scale_points([e.inside_point], width, height)[0]
             rule = LineRule(self.line[0], self.line[1], inside, e.margin * height)
-        self.counter = EntranceCounter(rule, max_age=self._max_age)
+        self.counter = EntranceCounter(rule, max_age=self._max_age, min_travel=e.min_travel * width)
         self.hornets = HornetMonitor(
             self.hawk_zone,
             math.hypot(width, height),
@@ -94,7 +95,7 @@ class HivePipeline:
         live: bool = False,
         on_refresh=None,
     ) -> RunSummary:
-        cap = cv2.VideoCapture(source)
+        cap = open_source(source, self.cfg.camera.width, self.cfg.camera.height, self.cfg.camera.process_fps)
         if not cap.isOpened():
             raise RuntimeError(f"cannot open video source {source!r}")
         if live:

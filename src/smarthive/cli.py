@@ -17,6 +17,7 @@ import yaml
 
 from . import dashboard
 from .alerts import Alert, Notifier
+from .capture import is_live, open_source
 from .config import Config, EntranceCfg, load_config
 from .simulate import SCENARIOS, simulate
 from .status import compute_day, describe, notify_status, recompute_all
@@ -115,7 +116,7 @@ def cmd_run(args) -> int:
     source = args.source if args.source is not None else cfg.camera.source
     if isinstance(source, str) and source.isdigit():
         source = int(source)
-    live = isinstance(source, int) or str(source).startswith(("rtsp://", "http://", "https://"))
+    live = is_live(source)
     storage = Storage(cfg.storage.data_dir)
     notifier = Notifier(cfg.alerts, dry_run=args.dry_run)
     pipe = HivePipeline(cfg, storage, notifier, _perception(cfg))
@@ -237,7 +238,7 @@ def cmd_calibrate(args) -> int:
     source = args.source if args.source is not None else cfg.camera.source
     if isinstance(source, str) and source.isdigit():
         source = int(source)
-    cap = cv2.VideoCapture(source)
+    cap = open_source(source, cfg.camera.width, cfg.camera.height)
     ok, frame = False, None
     for _ in range(10):  # cameras need a few frames to settle exposure
         ok, frame = cap.read()

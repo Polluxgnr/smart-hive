@@ -9,7 +9,7 @@ hive:
 language: fr             # fr or en
 
 camera:
-  source: 0              # 0 = first USB/Pi camera, or a video file, or rtsp://...
+  source: 0              # 0 = first USB webcam; "picamera" = Raspberry Pi camera module; or a video file / rtsp://...
   width: 1280
   height: 720
   process_fps: 10        # frames analysed per second (Pi 4: 4-8, Pi 5: 8-12)
@@ -22,6 +22,7 @@ entrance:
   line: [[0.05, 0.45], [0.95, 0.45]]
   inside_point: [0.5, 0.2]
   margin: 0.015
+  min_travel: 0.03       # zone mode: ignore bees that moved less than this (fraction of image width)
   # Space in front of the entrance where hornets hover. Leave empty for the whole image.
   hawk_zone:
 

@@ -39,6 +39,7 @@ class EntranceCfg:
     line: NormPoints = field(default_factory=lambda: [[0.05, 0.45], [0.95, 0.45]])
     inside_point: list[float] = field(default_factory=lambda: [0.5, 0.2])
     margin: float = 0.015  # line hysteresis, fraction of frame height
+    min_travel: float = 0.03  # zone rule: ignore tracks that moved less (fraction of frame width)
     hawk_zone: NormPoints | None = None  # None = whole frame
 
 
