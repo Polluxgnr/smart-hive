@@ -1,0 +1,13 @@
+[Unit]
+Description=Smart Hive dashboard (local web page)
+After=network-online.target
+
+[Service]
+User=@USER@
+WorkingDirectory=@DIR@
+ExecStart=@DIR@/.venv/bin/smart-hive serve --config @DIR@/config.yaml
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

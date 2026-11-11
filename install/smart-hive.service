@@ -1,0 +1,15 @@
+[Unit]
+Description=Smart Hive camera monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=@USER@
+WorkingDirectory=@DIR@
+ExecStart=@DIR@/.venv/bin/smart-hive run --config @DIR@/config.yaml
+Restart=always
+RestartSec=20
+Nice=5
+
+[Install]
+WantedBy=multi-user.target
