@@ -166,6 +166,13 @@ def cutout(img: np.ndarray, box: list[float]) -> tuple[np.ndarray, np.ndarray] |
     return img[y1:y2, x1:x2].copy(), m
 
 
+def credit(sp: dict) -> str:
+    """'iNaturalist photo N by NAME' (CC BY) or 'iNaturalist photo N, no rights reserved' (CC0)."""
+    who = sp["attribution"]
+    who = " by " + who[4:].split(", some rights reserved")[0] if who.startswith("(c) ") else ", " + who
+    return f"iNaturalist photo {sp['photo_id']}{who} ([observation]({sp['observation_url']}))"
+
+
 def pick_sprites(inat: Path, boxes: dict, attribution: dict, folder: str, n: int, seed: int) -> list[dict]:
     rng = random.Random(seed)
     keys = [k for k, v in boxes.items() if k.startswith(folder + "/") and len(v) == 1]
@@ -251,25 +258,49 @@ def pass_path(y: float, width: int, start: float = 0.3, duration: float = 0.12):
 # -- manifest -----------------------------------------------------------------------------
 CLIPS = {
     # file: (background video, title, what to expect)
-    "entrance_guards.mp4": ("20230609b-def", "Guards at the entrance / Gardiennes",
-                            "Real footage. Few foragers, guard bees near the slot."),
+    "entrance_guards.mp4": (
+        "20230609b-def",
+        "Guards at the entrance / Gardiennes",
+        "Real footage. Few foragers, guard bees near the slot.",
+    ),
     "entrance_busy.mp4": ("20230711a-fan", "Busy board / Planche animée", "Real footage. Heavy traffic."),
     "entrance_morning.mp4": ("20230711b-fan", "Normal traffic / Trafic normal", "Real footage."),
-    "night.mp4": ("20230711b-fan", "Dusk (synthetic) / Crépuscule (synthétique)",
-                  "Low light: expect fewer detections."),
+    "night.mp4": (
+        "20230711b-fan",
+        "Dusk (synthetic) / Crépuscule (synthétique)",
+        "Low light: expect fewer detections.",
+    ),
     "rain.mp4": ("20230711a-fan", "Rain (synthetic) / Pluie (synthétique)", "Rain streaks over a busy board."),
-    "empty_entrance.mp4": ("20230711a-fan", "Empty entrance (synthetic) / Entrée vide (synthétique)",
-                           "No bees: nothing should be counted."),
-    "fanning_commons.mp4": (None, "Fanning bees / Abeilles ventileuses",
-                            "Real footage from another hive and camera angle (Wikimedia Commons)."),
-    "hornet_velutina_hawking.mp4": ("20230711b-fan", "Asian hornet hawking (composite) / Frelon asiatique",
-                                    "Expected: one Vespa velutina event and an alert."),
-    "hornet_velutina_busy.mp4": ("20230711a-fan", "Asian hornet over a busy board (composite)",
-                                 "Expected: one Vespa velutina event and an alert."),
-    "hornet_crabro_hawking.mp4": ("20230609b-def", "European hornet (composite) / Frelon européen",
-                                  "Expected: a Vespa crabro event, logged without alert."),
-    "wasp_passing.mp4": ("20230711b-fan", "Wasp passing (composite) / Guêpe de passage",
-                         "Expected: no event (it does not hover)."),
+    "empty_entrance.mp4": (
+        "20230711a-fan",
+        "Empty entrance (synthetic) / Entrée vide (synthétique)",
+        "No bees: nothing should be counted.",
+    ),
+    "fanning_commons.mp4": (
+        None,
+        "Fanning bees / Abeilles ventileuses",
+        "Real footage from another hive and camera angle (Wikimedia Commons).",
+    ),
+    "hornet_velutina_hawking.mp4": (
+        "20230711b-fan",
+        "Asian hornet hawking (composite) / Frelon asiatique",
+        "Expected: one Vespa velutina event and an alert.",
+    ),
+    "hornet_velutina_busy.mp4": (
+        "20230711a-fan",
+        "Asian hornet over a busy board (composite)",
+        "Expected: one Vespa velutina event and an alert.",
+    ),
+    "hornet_crabro_hawking.mp4": (
+        "20230609b-def",
+        "European hornet (composite) / Frelon européen",
+        "Expected: a Vespa crabro event, logged without alert.",
+    ),
+    "wasp_passing.mp4": (
+        "20230711b-fan",
+        "Wasp passing (composite) / Guêpe de passage",
+        "Expected: no event (it does not hover).",
+    ),
 }
 # Entrance zone for the Commons clip (other hive), read off its first frame.
 COMMONS_ZONE = [[0.05, 0.30], [0.95, 0.30], [0.95, 0.45], [0.05, 0.45]]
@@ -439,8 +470,7 @@ def main(argv: list[str] | None = None) -> int:
         sources.append(
             (
                 f"videos/{name}",
-                f"background: {LB_CREDIT}; insect: iNaturalist photo {sp['photo_id']} by {sp['attribution']} "
-                f"([observation]({sp['observation_url']}))",
+                f"background: {LB_CREDIT}; insect: {credit(sp)}",
                 f"CC BY 4.0 (background) + {sp['licence'].upper().replace('CC-', 'CC ')} (insect)",
                 f"**synthetic composite**: {note}",
             )
@@ -464,8 +494,7 @@ def main(argv: list[str] | None = None) -> int:
             sources.append(
                 (
                     f"images/{name}",
-                    f"iNaturalist photo {sp['photo_id']} by {sp['attribution']} "
-                    f"([observation]({sp['observation_url']}))",
+                    credit(sp),
                     sp["licence"].upper().replace("CC-", "CC "),
                     "unchanged",
                 )
