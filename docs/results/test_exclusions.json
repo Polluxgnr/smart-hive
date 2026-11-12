@@ -1,0 +1,23 @@
+{
+ "reason": "manual check: no identifiable insect of the labelled group (nest, silhouette, net, cocoon)",
+ "files": {
+  "vespa_velutina": [
+   "inat_vespa_velutina_86113515_1.jpg"
+  ],
+  "vespa_crabro": [
+   "inat_vespa_crabro_39601127_0.jpg",
+   "inat_vespa_crabro_39628568_0.jpg",
+   "inat_vespa_crabro_39688588_0.jpg",
+   "inat_vespa_crabro_968967_0.jpg"
+  ],
+  "wasp": [
+   "inat_polistes_678070_0.jpg",
+   "inat_polistes_678070_1.jpg",
+   "inat_polistes_78487222_0.jpg",
+   "inat_polistes_80316489_0.jpg",
+   "inat_polistes_98506415_0.jpg",
+   "inat_polistes_98506415_1.jpg",
+   "inat_vespula_50553310_0.jpg"
+  ]
+ }
+}

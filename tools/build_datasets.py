@@ -251,7 +251,29 @@ def build_classification(args, boxes: dict, split: dict) -> None:
                 for f in sorted((pollen_dir / part / cls).glob("*.jpg")):
                     link_or_copy(f, out / part / cls / f"vn_{f.name}")
                     counts[(part, cls)] = counts.get((part, cls), 0) + 1
+    balance_train(out / "train", args.seed, cap=args.cap_bees, floor=args.min_per_class)
     print("classification crops:", dict(sorted(counts.items())))
+
+
+def balance_train(train: Path, seed: int, cap: int, floor: int) -> None:
+    """Cap the majority class and repeat rare classes so each has at least ``floor`` files.
+
+    Repeats are hard links; training augmentation (flips, rotation, colour) makes each copy
+    look different. Only the train split is touched; val and test keep their real frequencies.
+    """
+    rng = random.Random(seed)
+    for d in sorted(p for p in train.iterdir() if p.is_dir()):
+        files = sorted(f for f in d.glob("*.jpg") if "_rep" not in f.stem)
+        if len(files) > cap:
+            for f in rng.sample(files, len(files) - cap):
+                f.unlink()
+            files = sorted(d.glob("*.jpg"))
+        k = 0
+        while len(files) and len(list(d.glob("*.jpg"))) < floor:
+            src = files[k % len(files)]
+            link_or_copy(src, d / f"{src.stem}_rep{k // len(files)}.jpg")
+            k += 1
+        print(f"train/{d.name}: {len(list(d.glob('*.jpg')))} files after balancing")
 
 
 def filter_boxes(raw: dict, min_conf: float, max_boxes: int) -> dict:
@@ -282,8 +304,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", type=Path, default=Path("data/datasets"))
     ap.add_argument("--composites", type=int, default=600)
     ap.add_argument("--bee-crops", type=int, default=1500)
+    ap.add_argument("--cap-bees", type=int, default=1500, help="max train crops per class")
+    ap.add_argument("--min-per-class", type=int, default=600, help="repeat rarer train classes up to this")
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--min-conf", type=float, default=0.12, help="pseudo-label score cut")
+    ap.add_argument("--min-conf", type=float, default=0.08, help="pseudo-label score cut (chosen by eye on 24 photos)")
     ap.add_argument("--max-boxes", type=int, default=3, help="drop photos with more insects (nests)")
     ap.add_argument("--only", choices=["detect", "classify"])
     args = ap.parse_args(argv)

@@ -28,9 +28,15 @@ def detection(args) -> dict:
 
     root = args.data / "detect"
     test_imgs = sorted((root / "images" / "test").glob("*.jpg"))
+    # Photos rejected by the manual check of the test crops are left out here too.
+    excl_file = Path("data/splits/test_exclusions.json")
+    excluded = set()
+    if excl_file.exists():
+        for names in json.loads(excl_file.read_text())["files"].values():
+            excluded |= {n.rsplit("_", 1)[0] + ".jpg" for n in names}
     subsets = {
         "landing_board_test_hives": [p for p in test_imgs if not p.name.startswith(("inat_", "comp_"))],
-        "inat_test_photos": [p for p in test_imgs if p.name.startswith("inat_")],
+        "inat_test_photos": [p for p in test_imgs if p.name.startswith("inat_") and p.name not in excluded],
         "composites_test_hives": [p for p in test_imgs if p.name.startswith("comp_")],
     }
     model = YOLO(args.detector)
