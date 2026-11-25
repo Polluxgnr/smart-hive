@@ -39,8 +39,7 @@ def counting(fps: float) -> None:
         ax.set_title(f"Bees {key.upper()} per video", fontsize=10, color=INK, loc="left")
         _style(ax)
     axes[0].legend(frameon=False, fontsize=8)
-    fig.text(0.01, 0.01, f"* hive and camera never seen in training. Analysed at {fps:g} fps.", fontsize=8,
-             color=MUTED)
+    fig.text(0.01, 0.01, f"* hive and camera never seen in training. Analysed at {fps:g} fps.", fontsize=8, color=MUTED)
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     fig.savefig(IMG / "counting.png")
     plt.close(fig)
