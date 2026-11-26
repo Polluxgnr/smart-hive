@@ -142,15 +142,21 @@ used (any hawking event = noted; >= 3 events/hour = *check*, with advice).
 
 ## 6. Hornet module
 
-1. A track whose voted class is `vespa_velutina`, `vespa_crabro` or `wasp` is a vespid track.
-2. **Hawking** = the track spends at least `hawk_min_seconds` (default 3 s) inside the
-   *hawking zone* (the space in front of the entrance) with low net displacement relative to
-   its path length (hovering, not passing through).
-3. An event is opened when the rule first holds and closed when the track ends. It stores
-   species, confidence (track-averaged probability), duration, and a snapshot (frame + box).
-4. **Alerts**: only *V. velutina* alerts by default; *V. crabro* (native, protected in some
-   regions, less harmful) and wasps are logged and shown, not pushed. A cooldown
-   (default 15 min per hive) prevents alert storms.
+1. A **sighting** is a visible track judged to be a vespid: the classifier's track vote for
+   hornet/wasp is at least 0.6, and either the detector also labelled part of the track
+   "vespid" or the classifier is very sure (>= 0.8). The detector alone never decides: it
+   confuses close, blurred bees with hornets.
+2. **Hawking** = sightings over at least `hawk_min_seconds` (default 3 s) of a 4 s window, on
+   at least 40 % of the analysed frames, inside the *hawking zone* (from the slot forward, not
+   the hive wall), within a small area (not flying through) and with movement (a cluster of bees
+   sitting at the slot does not count). This works on **presence over a window** rather than on
+   one track, because fast flight cuts a hornet's track into short pieces.
+3. An event closes after 2 s without a sighting. It stores species (vote over all its
+   sightings), confidence, duration, close approaches to bees, and a snapshot.
+4. **Alerts**: only *V. velutina* alerts by default; *V. crabro* (native) and wasps are logged
+   and shown, not pushed. A cooldown (default 15 min per hive) prevents alert storms. Species
+   recognition at entrance resolution is the weakest part of the system (docs/report.md,
+   section 4).
 
 ## 7. Alerts
 
