@@ -27,7 +27,7 @@ from pathlib import Path
 import cv2
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from make_samples import composite, hover_path, pass_path, pick_sprites, read_clip
+from make_samples import composite, hover_path, pass_path, pick_sprites, read_clip, slot_zone_norm
 
 from smarthive.alerts import Notifier
 from smarthive.config import Config
@@ -53,10 +53,23 @@ def write_tmp(frames, path: Path, fps: float = 25.0) -> None:
     vw.release()
 
 
-def run_pipeline(perception, video: Path, fps: float, tmp: Path) -> tuple[list[dict], int, float]:
+def entrance_for(video_name: str) -> dict:
+    """Slot zone and hawking zone (in front of the slot) as an installer would draw them."""
+    if video_name.startswith("yt"):
+        return {}
+    zone = slot_zone_norm(video_name)
+    hawk = [[0.0, zone[0][1]], [1.0, zone[1][1]], [1.0, 1.0], [0.0, 1.0]]
+    return {"zone": zone, "hawk_zone": hawk}
+
+
+def run_pipeline(
+    perception, video: Path, fps: float, tmp: Path, entrance: dict | None = None
+) -> tuple[list[dict], int, float]:
     cfg = Config()
     cfg.storage.data_dir = str(tmp / "db")
     cfg.camera.process_fps = fps
+    for key, value in (entrance or {}).items():
+        setattr(cfg.entrance, key, value)
     storage = Storage(cfg.storage.data_dir)
     storage.clear_hive(cfg.hive.id)
     notifier = Notifier(cfg.alerts, dry_run=True)
@@ -107,7 +120,8 @@ def main(argv: list[str] | None = None) -> int:
                 frames = read_clip(args.tracking / f"{video}.mp4", rng.uniform(5, 100), 10)
                 if sp is not None:
                     size = int(40 * (2.0 if folder != "vespula" else 1.3) * rng.uniform(0.85, 1.15))
-                    cx, cy = rng.uniform(250, 710), rng.uniform(200, 400)
+                    top = max(entrance_for(video).get("zone", [[0, 0.3]])[0][1], 0.3) * 540 + 60  # in front of the slot
+                    cx, cy = rng.uniform(250, 710), rng.uniform(min(top, 400), 420)
                     path = (
                         hover_path(cx, cy, rng.uniform(30, 90), rng.uniform(15, 35))
                         if motion == "hover"
@@ -116,7 +130,7 @@ def main(argv: list[str] | None = None) -> int:
                     frames = composite(frames, sp, size, path, seed=i)
                 clip = tmp / f"{kind}_{i}.mp4"
                 write_tmp(frames, clip)
-                events, alerts, _ = run_pipeline(perception, clip, args.fps, tmp)
+                events, alerts, _ = run_pipeline(perception, clip, args.fps, tmp, entrance_for(video))
                 rec = {
                     "kind": kind,
                     "i": i,
@@ -131,7 +145,9 @@ def main(argv: list[str] | None = None) -> int:
         real = []
         if not args.skip_real:
             for name in REAL_VIDEOS:
-                events, alerts, seconds = run_pipeline(perception, args.tracking / f"{name}.mp4", args.fps, tmp)
+                events, alerts, seconds = run_pipeline(
+                    perception, args.tracking / f"{name}.mp4", args.fps, tmp, entrance_for(name)
+                )
                 real.append(
                     {"video": name, "seconds": seconds, "events": [e["species"] for e in events], "alerts": alerts}
                 )

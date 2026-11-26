@@ -14,6 +14,15 @@ clips:
       - 0.5083
     - - 0.1289
       - 0.5093
+    hawk_zone:
+    - - 0.0
+      - 0.4211
+    - - 1.0
+      - 0.4215
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/entrance_busy.mp4
   title: Busy board / Planche animée
   note: Real footage. Heavy traffic.
@@ -28,6 +37,15 @@ clips:
       - 0.3241
     - - 0.0579
       - 0.2789
+    hawk_zone:
+    - - 0.0
+      - 0.1736
+    - - 1.0
+      - 0.2204
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/entrance_morning.mp4
   title: Normal traffic / Trafic normal
   note: Real footage.
@@ -42,6 +60,15 @@ clips:
       - 0.3056
     - - 0.0944
       - 0.3229
+    hawk_zone:
+    - - 0.0
+      - 0.2273
+    - - 1.0
+      - 0.2083
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/night.mp4
   title: Dusk (synthetic) / Crépuscule (synthétique)
   note: 'Low light: expect fewer detections.'
@@ -56,6 +83,15 @@ clips:
       - 0.3056
     - - 0.0944
       - 0.3229
+    hawk_zone:
+    - - 0.0
+      - 0.2273
+    - - 1.0
+      - 0.2083
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/rain.mp4
   title: Rain (synthetic) / Pluie (synthétique)
   note: Rain streaks over a busy board.
@@ -70,6 +106,15 @@ clips:
       - 0.3241
     - - 0.0579
       - 0.2789
+    hawk_zone:
+    - - 0.0
+      - 0.1736
+    - - 1.0
+      - 0.2204
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/empty_entrance.mp4
   title: Empty entrance (synthetic) / Entrée vide (synthétique)
   note: 'No bees: nothing should be counted.'
@@ -84,6 +129,15 @@ clips:
       - 0.3241
     - - 0.0579
       - 0.2789
+    hawk_zone:
+    - - 0.0
+      - 0.1736
+    - - 1.0
+      - 0.2204
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/fanning_commons.mp4
   title: Fanning bees / Abeilles ventileuses
   note: Real footage from another hive and camera angle (Wikimedia Commons).
@@ -98,6 +152,15 @@ clips:
       - 0.45
     - - 0.05
       - 0.45
+    hawk_zone:
+    - - 0.0
+      - 0.3
+    - - 1.0
+      - 0.3
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/hornet_velutina_hawking.mp4
   title: Asian hornet hawking (composite) / Frelon asiatique
   note: 'Expected: one Vespa velutina event and an alert.'
@@ -112,6 +175,15 @@ clips:
       - 0.3056
     - - 0.0944
       - 0.3229
+    hawk_zone:
+    - - 0.0
+      - 0.2273
+    - - 1.0
+      - 0.2083
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/hornet_velutina_busy.mp4
   title: Asian hornet over a busy board (composite)
   note: 'Expected: one Vespa velutina event and an alert.'
@@ -126,6 +198,15 @@ clips:
       - 0.3241
     - - 0.0579
       - 0.2789
+    hawk_zone:
+    - - 0.0
+      - 0.1736
+    - - 1.0
+      - 0.2204
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/hornet_crabro_hawking.mp4
   title: European hornet (composite) / Frelon européen
   note: 'Expected: a Vespa crabro event, logged without alert.'
@@ -140,6 +221,15 @@ clips:
       - 0.5083
     - - 0.1289
       - 0.5093
+    hawk_zone:
+    - - 0.0
+      - 0.4211
+    - - 1.0
+      - 0.4215
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
 - file: videos/wasp_passing.mp4
   title: Wasp passing (composite) / Guêpe de passage
   note: 'Expected: no event (it does not hover).'
@@ -154,3 +244,12 @@ clips:
       - 0.3056
     - - 0.0944
       - 0.3229
+    hawk_zone:
+    - - 0.0
+      - 0.2273
+    - - 1.0
+      - 0.2083
+    - - 1.0
+      - 1.0
+    - - 0.0
+      - 1.0
