@@ -1,0 +1,460 @@
+{
+ "summary": {
+  "velutina_hover": {
+   "clips": 10,
+   "with_event": 10,
+   "with_velutina_alert": 4,
+   "species_of_events": [
+    "vespa_velutina",
+    "vespa_crabro",
+    "vespa_velutina",
+    "vespa_velutina",
+    "vespa_velutina",
+    "vespa_velutina",
+    "wasp",
+    "vespa_crabro",
+    "wasp",
+    "vespa_crabro"
+   ]
+  },
+  "crabro_hover": {
+   "clips": 10,
+   "with_event": 8,
+   "with_velutina_alert": 0,
+   "species_of_events": [
+    "vespa_crabro",
+    "vespa_crabro",
+    "vespa_crabro",
+    "vespa_crabro",
+    "vespa_crabro",
+    "vespa_crabro",
+    "vespa_crabro",
+    "vespa_crabro"
+   ]
+  },
+  "wasp_pass": {
+   "clips": 10,
+   "with_event": 3,
+   "with_velutina_alert": 0,
+   "species_of_events": [
+    "vespa_crabro",
+    "vespa_crabro",
+    "wasp"
+   ]
+  },
+  "none": {
+   "clips": 10,
+   "with_event": 0,
+   "with_velutina_alert": 0,
+   "species_of_events": []
+  },
+  "alert_recall": 0.4,
+  "alert_precision": 1.0,
+  "real_footage": {
+   "seconds": 438.8,
+   "velutina_alerts": 0,
+   "vespid_events": 4,
+   "videos": [
+    {
+     "video": "20230609b-def",
+     "seconds": 119.44,
+     "events": [],
+     "alerts": 0
+    },
+    {
+     "video": "20230711a-fan",
+     "seconds": 119.92,
+     "events": [
+      "vespa_crabro",
+      "vespa_crabro",
+      "vespa_crabro",
+      "wasp"
+     ],
+     "alerts": 0
+    },
+    {
+     "video": "20230711b-fan",
+     "seconds": 120.0,
+     "events": [],
+     "alerts": 0
+    },
+    {
+     "video": "yt5",
+     "seconds": 19.52,
+     "events": [],
+     "alerts": 0
+    },
+    {
+     "video": "yt8",
+     "seconds": 59.92,
+     "events": [],
+     "alerts": 0
+    }
+   ]
+  }
+ },
+ "clips": [
+  {
+   "kind": "velutina_hover",
+   "i": 0,
+   "video": "20230609b-def",
+   "events": [
+    "vespa_velutina"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_velutina/vespa_velutina_49246928.jpg"
+  },
+  {
+   "kind": "velutina_hover",
+   "i": 1,
+   "video": "20230711a-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_velutina/vespa_velutina_39041325.jpg"
+  },
+  {
+   "kind": "velutina_hover",
+   "i": 2,
+   "video": "20230609b-def",
+   "events": [
+    "vespa_velutina"
+   ],
+   "alerts": 1,
+   "sprite": "vespa_velutina/vespa_velutina_85296057.jpg"
+  },
+  {
+   "kind": "velutina_hover",
+   "i": 3,
+   "video": "20230609b-def",
+   "events": [
+    "vespa_velutina"
+   ],
+   "alerts": 1,
+   "sprite": "vespa_velutina/vespa_velutina_40901231.jpg"
+  },
+  {
+   "kind": "velutina_hover",
+   "i": 4,
+   "video": "20230609b-def",
+   "events": [
+    "vespa_velutina"
+   ],
+   "alerts": 1,
+   "sprite": "vespa_velutina/vespa_velutina_21655151.jpg"
+  },
+  {
+   "kind": "velutina_hover",
+   "i": 5,
+   "video": "20230711a-fan",
+   "events": [
+    "vespa_velutina"
+   ],
+   "alerts": 1,
+   "sprite": "vespa_velutina/vespa_velutina_84722303.jpg"
+  },
+  {
+   "kind": "velutina_hover",
+   "i": 6,
+   "video": "20230711b-fan",
+   "events": [
+    "wasp"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_velutina/vespa_velutina_28169402.jpg"
+  },
+  {
+   "kind": "velutina_hover",
+   "i": 7,
+   "video": "20230711a-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_velutina/vespa_velutina_83267350.jpg"
+  },
+  {
+   "kind": "velutina_hover",
+   "i": 8,
+   "video": "20230711b-fan",
+   "events": [
+    "wasp"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_velutina/vespa_velutina_39416384.jpg"
+  },
+  {
+   "kind": "velutina_hover",
+   "i": 9,
+   "video": "20230711a-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_velutina/vespa_velutina_45532931.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 0,
+   "video": "20230609b-def",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_39710014.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 1,
+   "video": "20230711b-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_39638851.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 2,
+   "video": "20230711b-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_39601116.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 3,
+   "video": "20230711a-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_39595046.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 4,
+   "video": "20230711b-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_39715745.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 5,
+   "video": "20230711a-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_22612124.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 6,
+   "video": "20230711b-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_29839336.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 7,
+   "video": "20230711b-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_39590090.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 8,
+   "video": "20230711b-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_39594773.jpg"
+  },
+  {
+   "kind": "crabro_hover",
+   "i": 9,
+   "video": "20230711b-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespa_crabro/vespa_crabro_39604625.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 0,
+   "video": "20230711b-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": "vespula/vespula_23232146.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 1,
+   "video": "20230711a-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespula/vespula_48665419.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 2,
+   "video": "20230609b-def",
+   "events": [],
+   "alerts": 0,
+   "sprite": "vespula/vespula_70206380.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 3,
+   "video": "20230609b-def",
+   "events": [],
+   "alerts": 0,
+   "sprite": "vespula/vespula_6776709.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 4,
+   "video": "20230609b-def",
+   "events": [],
+   "alerts": 0,
+   "sprite": "vespula/vespula_53525073.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 5,
+   "video": "20230609b-def",
+   "events": [],
+   "alerts": 0,
+   "sprite": "vespula/vespula_26444420.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 6,
+   "video": "20230711a-fan",
+   "events": [
+    "vespa_crabro"
+   ],
+   "alerts": 0,
+   "sprite": "vespula/vespula_48200203.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 7,
+   "video": "20230711a-fan",
+   "events": [
+    "wasp"
+   ],
+   "alerts": 0,
+   "sprite": "vespula/vespula_25123643.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 8,
+   "video": "20230609b-def",
+   "events": [],
+   "alerts": 0,
+   "sprite": "vespula/vespula_16681160.jpg"
+  },
+  {
+   "kind": "wasp_pass",
+   "i": 9,
+   "video": "20230711b-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": "vespula/vespula_32099989.jpg"
+  },
+  {
+   "kind": "none",
+   "i": 0,
+   "video": "20230711a-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  },
+  {
+   "kind": "none",
+   "i": 1,
+   "video": "20230711a-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  },
+  {
+   "kind": "none",
+   "i": 2,
+   "video": "20230711b-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  },
+  {
+   "kind": "none",
+   "i": 3,
+   "video": "20230711b-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  },
+  {
+   "kind": "none",
+   "i": 4,
+   "video": "20230711a-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  },
+  {
+   "kind": "none",
+   "i": 5,
+   "video": "20230711a-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  },
+  {
+   "kind": "none",
+   "i": 6,
+   "video": "20230609b-def",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  },
+  {
+   "kind": "none",
+   "i": 7,
+   "video": "20230711a-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  },
+  {
+   "kind": "none",
+   "i": 8,
+   "video": "20230711b-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  },
+  {
+   "kind": "none",
+   "i": 9,
+   "video": "20230711a-fan",
+   "events": [],
+   "alerts": 0,
+   "sprite": null
+  }
+ ]
+}
