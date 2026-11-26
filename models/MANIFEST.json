@@ -1,0 +1,15 @@
+{
+ "version": "v0.1.0",
+ "base_url": "https://github.com/Polluxgnr/smart-hive/releases/download/v0.1.0",
+ "note": "YOLO11n detector (bee, vespid) and YOLO11n-cls species classifier; see docs/report.md",
+ "files": {
+  "detector.pt": {
+   "sha256": "33424e330827e4dea3209ff3408d61cfd1289d82d3069034e3632c1d8a08eb0d",
+   "bytes": 5479578
+  },
+  "classifier.pt": {
+   "sha256": "692443d559e69e9f92d4a290212fb7713d6a327d679b822781eaf220bf6e9017",
+   "bytes": 3193410
+  }
+ }
+}
