@@ -251,9 +251,48 @@ def build_classification(args, boxes: dict, split: dict) -> None:
                 for f in sorted((pollen_dir / part / cls).glob("*.jpg")):
                     link_or_copy(f, out / part / cls / f"vn_{f.name}")
                     counts[(part, cls)] = counts.get((part, cls), 0) + 1
+    board_composites(args, boxes, split, args.board_composites, args.seed)
     balance_train(out / "train", args.seed, cap=args.cap_bees, floor=args.min_per_class)
     degrade_train(out / "train", args.seed)
     print("classification crops:", dict(sorted(counts.items())))
+
+
+def board_composites(args, boxes: dict, split: dict, per_class: int, seed: int) -> None:
+    """Vespid crops pasted on landing-board patches, labelled by species.
+
+    Without these the classifier only ever sees bees on a landing board and hornets on leaves
+    or walls, and learns "board = bee". Donors come from the same iNaturalist split as the
+    output (train or val), backgrounds from that split's hives, so the test set stays clean.
+    """
+    rng = random.Random(seed + 11)
+    out = args.out / "classify"
+    for part, hives, n in (("train", TRAIN_HIVES, per_class), ("val", VAL_HIVES, per_class // 6)):
+        frames = [f for h in hives for f in hive_frames(args.landing_board, h)]
+        for folder in VESPID_FOLDERS:
+            cls = INAT_TO_CLS[folder]
+            donors = [(k, b) for k, v in boxes.items() if split[k] == part and k.startswith(folder + "/") for b in v]
+            if not donors or not frames:
+                continue
+            made = 0
+            while made < n:
+                frame = cv2.imread(str(rng.choice(frames)))
+                H, W = frame.shape[:2]
+                side = rng.randint(72, 120)
+                x0, y0 = rng.randint(0, W - side), rng.randint(0, H - side)
+                patch = frame[y0 : y0 + side, x0 : x0 + side].copy()
+                rel, box = rng.choice(donors)
+                crop = vespid_crop(args.inat, rel, box, rng)
+                if crop is None:
+                    continue
+                target = side / 1.5 * rng.uniform(0.8, 1.1)  # same framing as crop_box (25 % context)
+                s = target / max(crop.shape[:2])
+                crop = cv2.resize(crop, (max(8, int(crop.shape[1] * s)), max(8, int(crop.shape[0] * s))))
+                soft_paste(patch, crop, side // 2, side // 2, rng)
+                d = out / part / cls
+                d.mkdir(parents=True, exist_ok=True)
+                cv2.imwrite(str(d / f"board_{folder}_{made:04d}.jpg"), patch, [cv2.IMWRITE_JPEG_QUALITY, 90])
+                made += 1
+        print(f"{part}: {n} board composites per vespid group")
 
 
 def degrade_train(train: Path, seed: int, share: float = 0.5) -> None:
@@ -343,6 +382,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--bee-crops", type=int, default=1500)
     ap.add_argument("--cap-bees", type=int, default=1500, help="max train crops per class")
     ap.add_argument("--min-per-class", type=int, default=600, help="repeat rarer train classes up to this")
+    ap.add_argument("--board-composites", type=int, default=300, help="vespid-on-board crops per group")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--min-conf", type=float, default=0.08, help="pseudo-label score cut (chosen by eye on 24 photos)")
     ap.add_argument("--max-boxes", type=int, default=3, help="drop photos with more insects (nests)")
