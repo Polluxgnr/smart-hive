@@ -1,0 +1,102 @@
+[
+ {
+  "video": "20230609b-def",
+  "duration_s": 119.5,
+  "gt_in": 137,
+  "gt_out": 28,
+  "unseen_hive": false,
+  "runs": [
+   {
+    "fps": 12.5,
+    "pred_in": 13,
+    "pred_out": 14,
+    "gt_subsampled_in": 91,
+    "gt_subsampled_out": 12,
+    "mae_per_30s_in": 31.0,
+    "mae_per_30s_out": 3.5,
+    "gt_mean_per_30s_in": 34.25,
+    "gt_mean_per_30s_out": 7.0
+   }
+  ]
+ },
+ {
+  "video": "20230711a-fan",
+  "duration_s": 120.0,
+  "gt_in": 183,
+  "gt_out": 152,
+  "unseen_hive": false,
+  "runs": [
+   {
+    "fps": 12.5,
+    "pred_in": 111,
+    "pred_out": 127,
+    "gt_subsampled_in": 163,
+    "gt_subsampled_out": 152,
+    "mae_per_30s_in": 18.0,
+    "mae_per_30s_out": 6.25,
+    "gt_mean_per_30s_in": 45.75,
+    "gt_mean_per_30s_out": 38.0
+   }
+  ]
+ },
+ {
+  "video": "20230711b-fan",
+  "duration_s": 120.1,
+  "gt_in": 439,
+  "gt_out": 55,
+  "unseen_hive": false,
+  "runs": [
+   {
+    "fps": 12.5,
+    "pred_in": 166,
+    "pred_out": 51,
+    "gt_subsampled_in": 346,
+    "gt_subsampled_out": 25,
+    "mae_per_30s_in": 54.6,
+    "mae_per_30s_out": 3.6,
+    "gt_mean_per_30s_in": 87.8,
+    "gt_mean_per_30s_out": 11.0
+   }
+  ]
+ },
+ {
+  "video": "yt5",
+  "duration_s": 19.5,
+  "gt_in": 25,
+  "gt_out": 18,
+  "unseen_hive": true,
+  "runs": [
+   {
+    "fps": 12.5,
+    "pred_in": 22,
+    "pred_out": 11,
+    "gt_subsampled_in": 23,
+    "gt_subsampled_out": 19,
+    "mae_per_30s_in": 3.0,
+    "mae_per_30s_out": 7.0,
+    "gt_mean_per_30s_in": 25.0,
+    "gt_mean_per_30s_out": 18.0
+   }
+  ]
+ },
+ {
+  "video": "yt8",
+  "duration_s": 60.0,
+  "gt_in": 62,
+  "gt_out": 69,
+  "unseen_hive": true,
+  "runs": [
+   {
+    "fps": 12.5,
+    "pred_in": 2,
+    "pred_out": 3,
+    "gt_subsampled_in": 56,
+    "gt_subsampled_out": 53,
+    "mae_per_30s_in": 30.0,
+    "mae_per_30s_out": 33.0,
+    "gt_mean_per_30s_in": 31.0,
+    "gt_mean_per_30s_out": 34.5
+   }
+  ]
+ }
+]
