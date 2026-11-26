@@ -198,7 +198,11 @@ def pick_sprites(inat: Path, boxes: dict, attribution: dict, folder: str, n: int
 def composite(frames: list[np.ndarray], sprite: dict, size_px: int, path_fn, seed: int = 0) -> list[np.ndarray]:
     rng = random.Random(seed)
     crop, alpha = sprite["crop"], sprite["alpha"]
-    s = size_px / max(crop.shape[:2])
+    # Scale on the insect itself (the mask), not on the photo box with its margins:
+    # ``size_px`` is the insect's length in the frame.
+    ys, xs = np.nonzero(alpha > 0.5)
+    extent = max(xs.max() - xs.min(), ys.max() - ys.min()) + 1 if len(xs) else max(crop.shape[:2])
+    s = size_px / extent
     crop = cv2.resize(
         crop, (max(4, int(crop.shape[1] * s)), max(4, int(crop.shape[0] * s))), interpolation=cv2.INTER_AREA
     )
@@ -422,7 +426,7 @@ def main(argv: list[str] | None = None) -> int:
         f: pick_sprites(args.inat, boxes, attribution, f, 3, args.seed)
         for f in ("vespa_velutina", "vespa_crabro", "vespula")
     }
-    bee_px = 40  # median bee size at 960x540 in these clips
+    bee_px = 40  # median bee length (px) at 960x540 in these clips; V. velutina is ~2x, a wasp ~1.3x
     plans = [
         (
             "hornet_velutina_hawking.mp4",
