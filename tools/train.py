@@ -18,13 +18,20 @@ from pathlib import Path
 def train_detector(args) -> Path:
     from ultralytics import YOLO
 
+    last = Path("runs") / (args.name or "detector") / "weights" / "last.pt"
+    if args.resume and last.exists():
+        # Picks up after an interruption (laptop sleep, closed session) at the last epoch.
+        YOLO(str(last)).train(resume=True)
+        return _finish(args.name or "detector", "models/detector.pt")
     model = YOLO(args.weights or "yolo11n.pt")
     model.train(
         data=str(Path(args.data or "data/datasets/detect/data.yaml").resolve()),
+        fraction=args.fraction,
+        freeze=args.freeze,
         epochs=args.epochs,
         imgsz=args.imgsz or 640,
         batch=args.batch or 8,
-        workers=1,
+        workers=0,
         device="cpu",
         patience=8,
         project=str(Path("runs").resolve()),
@@ -41,10 +48,14 @@ def train_detector(args) -> Path:
         plots=True,
         verbose=True,
     )
-    best = Path("runs") / (args.name or "detector") / "weights" / "best.pt"
+    return _finish(args.name or "detector", "models/detector.pt")
+
+
+def _finish(name: str, dest: str) -> Path:
+    best = Path("runs") / name / "weights" / "best.pt"
     Path("models").mkdir(exist_ok=True)
-    shutil.copy2(best, "models/detector.pt")
-    print("saved models/detector.pt")
+    shutil.copy2(best, dest)
+    print(f"saved {dest}")
     return best
 
 
@@ -57,7 +68,7 @@ def train_classifier(args) -> Path:
         epochs=args.epochs,
         imgsz=args.imgsz or 96,
         batch=args.batch or 64,
-        workers=1,
+        workers=0,
         device="cpu",
         patience=8,
         project=str(Path("runs").resolve()),
@@ -85,6 +96,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--data")
     ap.add_argument("--weights")
     ap.add_argument("--name")
+    ap.add_argument("--fraction", type=float, default=1.0, help="share of training images used")
+    ap.add_argument("--freeze", type=int, default=0, help="freeze the first N layers (10 = backbone)")
+    ap.add_argument("--resume", action="store_true", help="continue an interrupted run")
     args = ap.parse_args(argv)
     (train_detector if args.what == "detector" else train_classifier)(args)
     return 0

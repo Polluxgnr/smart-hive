@@ -117,15 +117,28 @@ def test_example_config_is_valid():
 
 
 # -- hornet module -----------------------------------------------------------------
-def make_track(points, species="vespa_velutina", dt=0.1):
-    tr = Track(1, first_t=0.0)
+DT = 0.1
+
+
+def probs_for(species, p=0.9):
     probs = [0.0] * len(SPECIES)
-    probs[SPECIES.index(species)] = 0.9
-    probs[0] += 0.1
-    for i, p in enumerate(points):
-        tr.add(i * dt, p, 30.0, species != "bee", 0.8)
-        tr.add_probs(probs, i)
-    return tr
+    probs[SPECIES.index(species)] = p
+    probs[0] += 1 - p
+    return probs
+
+
+def feed(mon, points, species="vespa_velutina", detector_vespid=True, p=0.9, t0=0.0, track_id=1, bees=None):
+    """Feed one track frame by frame. Returns (opened, closed) collected over all frames."""
+    tr = Track(track_id, first_t=t0)
+    opened, closed = [], []
+    for i, pt in enumerate(points):
+        t = t0 + i * DT
+        tr.add(t, pt, 30.0, detector_vespid, 0.8)
+        tr.add_probs(probs_for(species, p), i)
+        o, c = mon.update(t, {track_id: tr}, {track_id}, bees(pt) if bees else ())
+        opened += o
+        closed += c
+    return opened, closed, tr
 
 
 def hover(n, cx=500, cy=300, r=20):
@@ -134,47 +147,70 @@ def hover(n, cx=500, cy=300, r=20):
 
 def test_hovering_velutina_opens_one_event_and_closes_it():
     mon = HornetMonitor(hawk_zone=None, frame_diag=1000, min_seconds=3.0)
-    tr = make_track(hover(10))
-    opened, _ = mon.update(1.0, {1: tr}, {1})
-    assert opened == []  # 1 s of hovering is not enough
-    tr = make_track(hover(40))
-    opened, _ = mon.update(4.0, {1: tr}, {1})
+    opened, _, _ = feed(mon, hover(20))
+    assert opened == []  # 2 s of hovering is not enough
+    opened, _, _ = feed(mon, hover(30), t0=2.0)
     assert len(opened) == 1 and opened[0].is_velutina
-    opened, _ = mon.update(4.1, {1: tr}, {1})
-    assert opened == []  # same track, same event
-    _, closed = mon.update(6.0, {}, set())
-    assert len(closed) == 1 and closed[0].duration == pytest.approx(2.0)
+    _, closed = mon.update(4.95, {}, set())
+    assert closed == []  # short gaps do not end the event
+    _, closed = mon.update(7.5, {}, set())
+    assert len(closed) == 1 and closed[0].duration == pytest.approx(4.9, abs=0.2)
+
+
+def test_fragmented_tracks_still_make_one_event():
+    """Fast flight breaks tracks; presence over the window is what counts."""
+    mon = HornetMonitor(hawk_zone=None, frame_diag=1000)
+    opened = []
+    for k in range(5):  # five 1-second track pieces with new ids
+        o, _, _ = feed(mon, hover(10), t0=k * 1.0, track_id=100 + k)
+        opened += o
+    assert len(opened) == 1
 
 
 def test_hornet_flying_through_is_not_hawking():
     mon = HornetMonitor(hawk_zone=None, frame_diag=1000, min_seconds=3.0)
-    tr = make_track([(i * 25.0, 300) for i in range(40)])  # crosses 1000 px in 4 s
-    opened, _ = mon.update(4.0, {1: tr}, {1})
+    opened, _, _ = feed(mon, [(i * 25.0, 300) for i in range(40)])  # crosses 1000 px in 4 s
     assert opened == []
 
 
 def test_hovering_bee_is_not_a_hornet_event():
     mon = HornetMonitor(hawk_zone=None, frame_diag=1000)
-    tr = make_track(hover(40), species="bee")
-    assert mon.update(4.0, {1: tr}, {1})[0] == []
+    assert feed(mon, hover(40), species="bee", detector_vespid=False)[0] == []
+
+
+def test_sitting_vespid_is_not_hawking():
+    mon = HornetMonitor(hawk_zone=None, frame_diag=1000)
+    # 4 s without moving: a cluster at the slot, not a hornet
+    assert feed(mon, [(500.0, 300.0)] * 40)[0] == []
+
+
+def test_classifier_alone_needs_to_be_sure():
+    mon = HornetMonitor(hawk_zone=None, frame_diag=1000)
+    assert feed(mon, hover(40), detector_vespid=False, p=0.7)[0] == []  # unsure, detector says bee
+    mon = HornetMonitor(hawk_zone=None, frame_diag=1000)
+    assert len(feed(mon, hover(40), detector_vespid=False, p=0.9)[0]) == 1  # very sure
 
 
 def test_hawking_outside_zone_is_ignored():
     zone = [(0, 0), (200, 0), (200, 200), (0, 200)]
     mon = HornetMonitor(hawk_zone=zone, frame_diag=1000)
-    assert mon.update(4.0, {1: make_track(hover(40))}, {1})[0] == []
+    assert feed(mon, hover(40))[0] == []
     mon2 = HornetMonitor(hawk_zone=zone, frame_diag=1000)
-    assert len(mon2.update(4.0, {1: make_track(hover(40, cx=100, cy=100))}, {1})[0]) == 1
+    assert len(feed(mon2, hover(40, cx=100, cy=100))[0]) == 1
 
 
 def test_strikes_count_close_approaches_once_per_bee():
     mon = HornetMonitor(hawk_zone=None, frame_diag=1000)
-    tr = make_track(hover(40))
-    mon.update(4.0, {1: tr}, {1})
-    hx, hy = tr.points[-1]
-    mon.update(4.1, {1: tr}, {1}, bee_points=[(7, (hx + 10, hy)), (8, (hx + 500, hy))])
-    mon.update(4.2, {1: tr}, {1}, bee_points=[(7, (hx + 5, hy))])
-    assert mon.open_event(1).strikes == 1
+    near = lambda pt: [(7, (pt[0] + 10, pt[1])), (8, (pt[0] + 500, pt[1]))]  # noqa: E731
+    opened, _, _ = feed(mon, hover(50), bees=near)
+    assert len(opened) == 1
+    assert mon.open_event().strikes == 1
+
+
+def test_species_comes_from_the_vote():
+    mon = HornetMonitor(hawk_zone=None, frame_diag=1000)
+    opened, _, _ = feed(mon, hover(40), species="vespa_crabro")
+    assert opened[0].species == "vespa_crabro" and not opened[0].is_velutina
 
 
 def test_track_vote_beats_single_bad_frame():

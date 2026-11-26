@@ -248,13 +248,15 @@ class HivePipeline:
         bucket.row = HourRow(hour=bucket.row.hour, observed_s=0.0)
 
     def _on_hornet_open(self, ev: HornetEvent, frame, tracks, now: datetime, summary: RunSummary) -> None:
-        tr = tracks[ev.track_id]
+        tr = tracks.get(ev.track_id)
         vis = frame.copy()
-        x, y = tr.points[-1]
-        s = tr.body_length * 1.2
-        box = (x - s / 2, y - s / 2, x + s / 2, y + s / 2)
-        label = f"{annotate.species_label(ev.species, self.lang)} {ev.confidence:.0%}"
-        annotate.draw_box(vis, box, label, annotate.COLOURS.get(ev.species, annotate.HAWK), 3)
+        box = None
+        if tr is not None and tr.points:
+            x, y = tr.points[-1]
+            s = tr.body_length * 1.2
+            box = (x - s / 2, y - s / 2, x + s / 2, y + s / 2)
+            label = f"{annotate.species_label(ev.species, self.lang)} {ev.confidence:.0%}"
+            annotate.draw_box(vis, box, label, annotate.COLOURS.get(ev.species, annotate.HAWK), 3)
         name = f"{now:%Y%m%d_%H%M%S}_{self.cfg.hive.id}_{ev.event_id}.jpg"
         path = self.storage.data_dir / "snapshots" / name
         cv2.imwrite(str(path), vis, [cv2.IMWRITE_JPEG_QUALITY, 85])

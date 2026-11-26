@@ -252,7 +252,44 @@ def build_classification(args, boxes: dict, split: dict) -> None:
                     link_or_copy(f, out / part / cls / f"vn_{f.name}")
                     counts[(part, cls)] = counts.get((part, cls), 0) + 1
     balance_train(out / "train", args.seed, cap=args.cap_bees, floor=args.min_per_class)
+    degrade_train(out / "train", args.seed)
     print("classification crops:", dict(sorted(counts.items())))
+
+
+def degrade_train(train: Path, seed: int, share: float = 0.5) -> None:
+    """Make part of the train crops look like entrance-camera crops.
+
+    Photos are sharp close-ups; at the hive a hornet is 40-80 px wide and blurred by its wings.
+    A random ``share`` of the files is shrunk to 24-64 px, enlarged back and, half of the time,
+    motion-blurred. Files are rewritten (never through a hard link) so the sources stay intact.
+    """
+    rng = random.Random(seed + 7)
+    n = 0
+    for f in sorted(train.rglob("*.jpg")):
+        if rng.random() >= share:
+            continue
+        img = cv2.imread(str(f))
+        if img is None:
+            continue
+        h, w = img.shape[:2]
+        side = rng.randint(24, 64)
+        s = side / max(h, w)
+        if s < 1:
+            small = cv2.resize(img, (max(4, int(w * s)), max(4, int(h * s))), interpolation=cv2.INTER_AREA)
+            img = cv2.resize(small, (w, h), interpolation=cv2.INTER_LINEAR)
+        if rng.random() < 0.5:
+            k = rng.choice([3, 5, 7])
+            kernel = np.zeros((k, k), np.float32)
+            kernel[k // 2, :] = 1.0 / k
+            img = cv2.filter2D(
+                img, -1, cv2.warpAffine(kernel, cv2.getRotationMatrix2D((k / 2, k / 2), rng.uniform(0, 180), 1), (k, k))
+            )
+        tmp = f.with_suffix(".tmp.jpg")
+        cv2.imwrite(str(tmp), img, [cv2.IMWRITE_JPEG_QUALITY, 85])
+        f.unlink()
+        tmp.replace(f)
+        n += 1
+    print(f"degraded {n} train crops to entrance-camera quality")
 
 
 def balance_train(train: Path, seed: int, cap: int, floor: int) -> None:

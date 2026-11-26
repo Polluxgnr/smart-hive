@@ -22,6 +22,7 @@ class Track:
     sizes: deque = field(default_factory=lambda: deque(maxlen=600))
     det_vespid: float = 0.0  # running sum of detector "vespid" confidence
     det_n: int = 0
+    det_vespid_n: int = 0  # frames where the detector said "vespid"
     prob_sum: list[float] = field(default_factory=lambda: [0.0] * len(SPECIES))
     prob_n: int = 0
     last_classified_frame: int = -(10**9)
@@ -35,6 +36,7 @@ class Track:
         self.det_n += 1
         if det_is_vespid:
             self.det_vespid += det_conf
+            self.det_vespid_n += 1
 
     def add_probs(self, probs: list[float], frame_idx: int) -> None:
         for i, v in enumerate(probs):
@@ -59,6 +61,11 @@ class Track:
         if p:
             return sum(p[s] for s in VESPIDS)
         return self.det_vespid / self.det_n if self.det_n else 0.0
+
+    @property
+    def detector_vespid_share(self) -> float:
+        """Share of this track's detections that the detector labelled 'vespid'."""
+        return self.det_vespid_n / self.det_n if self.det_n else 0.0
 
     @property
     def species(self) -> str:
