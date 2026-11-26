@@ -244,7 +244,9 @@ def _hourly_baseline(storage: Storage, hive: str, day: str, window: int = 21):
     return med, lo, hi
 
 
-def render(storage: Storage, cfg: Config, out_dir: str | Path, day: str | None = None) -> Path:
+def render(
+    storage: Storage, cfg: Config, out_dir: str | Path, day: str | None = None, names: dict[str, str] | None = None
+) -> Path:
     """Write ``index.html`` (and copy snapshots) into ``out_dir``. Returns the page path."""
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -252,7 +254,7 @@ def render(storage: Storage, cfg: Config, out_dir: str | Path, day: str | None =
     hives = storage.hives() or [cfg.hive.id]
     body: list[str] = []
     for hive in hives:
-        body.append(_render_hive(storage, cfg, hive, out, day))
+        body.append(_render_hive(storage, cfg, hive, out, day, names or {}))
     page = (
         f'<!doctype html><html lang="{lang}"><head><meta charset="utf-8">'
         f'<meta name="viewport" content="width=device-width,initial-scale=1">'
@@ -269,13 +271,13 @@ def render(storage: Storage, cfg: Config, out_dir: str | Path, day: str | None =
     return path
 
 
-def _render_hive(storage: Storage, cfg: Config, hive: str, out: Path, day: str | None) -> str:
+def _render_hive(storage: Storage, cfg: Config, hive: str, out: Path, day: str | None, names: dict[str, str]) -> str:
     lang = cfg.language
     rows = storage.daily_rows(hive, limit=30)
     days_all = storage.days_with_data(hive)
     day = day or (days_all[-1] if days_all else date.today().isoformat())
     today_row = next((r for r in rows if r["day"] == day), rows[-1] if rows else None)
-    name = cfg.hive.name if hive == cfg.hive.id else hive
+    name = cfg.hive.name if hive == cfg.hive.id else names.get(hive, hive)
     sim = storage.is_simulated(hive)
     parts = [f"<h2>{_e(name)}{'<span class=badge>' + _e(t('dash.simulated', lang)) + '</span>' if sim else ''}</h2>"]
 

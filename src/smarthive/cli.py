@@ -196,7 +196,7 @@ def cmd_demo(args) -> int:
             flush=True,
         )
     compute_day(storage, clips_cfg, date.today().isoformat(), "samples")
-    page = dashboard.render(storage, demo_cfg, out)
+    page = dashboard.render(storage, demo_cfg, out, names={"samples": clips_cfg.hive.name})
     _append_clips(page, rows, base.language)
     print(f"\nDashboard: {page.resolve()}")
     if not args.no_open:
